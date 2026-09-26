@@ -84,7 +84,7 @@ validate_app_name() {
 
 # Handle global options
 AUTO_CONFIRM=false
-APP_NAME=""
+APP_NAME="${MANUBISGUARD_NODE_NAME:-manubis}"
 CUSTOM_NAME_SET=false
 ARGS=()
 while [[ $# -gt 0 ]]; do
@@ -159,14 +159,14 @@ if [ -z "${APP_DIR:-}" ]; then
         APP_DIR="$INSTALL_DIR/$APP_NAME"
     fi
 fi
-DATA_DIR="${DATA_DIR:-/var/lib/$APP_NAME}"
+DATA_DIR="${DATA_DIR:-/var/lib/pg-node}"
 COMPOSE_FILE="$APP_DIR/docker-compose.yml"
 ENV_FILE="$APP_DIR/.env"
 SSL_CERT_FILE="$DATA_DIR/certs/ssl_cert.pem"
 SSL_KEY_FILE="$DATA_DIR/certs/ssl_key.pem"
 LAST_XRAY_CORES=5
 FETCH_REPO="ManubisGuard/ManubisGuard-Node"
-NODE_SERVICE_REPO="ManubisGuard/node-serviced"
+NODE_SERVICE_REPO="PasarGuard/node-serviced"
 NODE_SERVICE_RELEASE_API="https://api.github.com/repos/${NODE_SERVICE_REPO}/releases/latest"
 NODE_SERVICE_BINARY_NAME="node-serviced"
 # Configure service paths based on APP_NAME.
@@ -922,17 +922,17 @@ uninstall_node() {
     fi
 }
 
-# Remove unused pasarguard/node Docker images.
+# Remove unused manubisguard/node Docker images.
 uninstall_node_docker_images() {
     local images
-    images=$(docker images --format '{{.Repository}} {{.ID}}' | awk '$1 ~ /^pasarguard\/node(:|$)/ {print $2}' | sort -u)
+    images=$(docker images --format '{{.Repository}} {{.ID}}' | awk '$1 ~ /^manubisguard\/node(:|$)/ {print $2}' | sort -u)
 
     if [ -z "$images" ]; then
-        colorized_echo yellow "pasarguard/node images not found"
+        colorized_echo yellow "manubisguard/node images not found"
         return 0
     fi
 
-    colorized_echo yellow "Checking pasarguard/node images for removal..."
+    colorized_echo yellow "Checking manubisguard/node images for removal..."
 
     for image in $images; do
         if docker ps -a --filter "ancestor=$image" -q | grep -q .; then
@@ -1249,10 +1249,10 @@ install_command() {
     fi
     colorized_echo blue "================================"
     colorized_echo magenta " node is set up with the following IP: $NODE_IP and Port: $SERVICE_PORT."
-    colorized_echo magenta "Please use the following Certificate in pasarguard Panel (it's located in ${DATA_DIR}/certs):"
+    colorized_echo magenta "Please use the following Certificate in ManubisGuard Panel (it's located in ${DATA_DIR}/certs):"
     cat "$SSL_CERT_FILE"
     colorized_echo blue "================================"
-    colorized_echo magenta "Next, use the API Key (UUID v4) in pasarguard Panel: "
+    colorized_echo magenta "Next, use the API Key (UUID v4) in ManubisGuard Panel: "
     colorized_echo red "${API_KEY}"
 }
 # Uninstall node containers, configuration, scripts, and optionally data directories.
@@ -2321,7 +2321,7 @@ renew_cert_command() {
     colorized_echo cyan "================================"
     colorized_echo green "✓ Certificate renewal completed!"
     colorized_echo cyan "================================"
-    colorized_echo magenta "Please use the following Certificate in pasarguard Panel (it's located in ${DATA_DIR}/certs):"
+    colorized_echo magenta "Please use the following Certificate in ManubisGuard Panel (it's located in ${DATA_DIR}/certs):"
     cat "$SSL_CERT_FILE"
     colorized_echo cyan "================================"
     restart_command
