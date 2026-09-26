@@ -7,7 +7,7 @@ github_raw_url() {
     local repo="$1"
     local path="$2"
 
-    printf 'https://github.com/%s/raw/main/%s\n' "$repo" "$path"
+    printf 'https://github.com/%s/raw/%s/%s\n' "$repo" "${MANUBISGUARD_NODE_BRANCH:-main}" "$path"
 }
 
 # Download a file from a URL to a local destination path using curl.
