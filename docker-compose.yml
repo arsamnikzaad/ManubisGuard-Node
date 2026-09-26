@@ -1,9 +1,7 @@
 services:
   node:
-    image: ghcr.io/arsamnikzaad/manubisguard-node:feature-amnezia-wg
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/manubisguard/manubisguard-node:latest
+    pull_policy: always
     container_name: manubisguard-node
     restart: always
     network_mode: host
