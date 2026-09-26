@@ -4,5 +4,6 @@ REPO="${MANUBISGUARD_NODE_REPO:-https://raw.githubusercontent.com/ManubisGuard/M
 tmp="$(mktemp)"
 trap 'rm -f "$tmp"' EXIT
 curl -fsSL "$REPO" -o "$tmp"
+export MANUBISGUARD_NODE_BRANCH="${MANUBISGUARD_NODE_BRANCH:-feature/amnezia-wg}"
 chmod +x "$tmp"
 exec "$tmp" "$@"
