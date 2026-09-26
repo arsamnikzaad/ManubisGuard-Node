@@ -24,7 +24,6 @@ backup_scripts() {
     backup_dir=$(create_temp_dir "scripts-backup")
 
     # Backup main scripts
-    [ -f "/usr/local/bin/pasarguard" ] && cp "/usr/local/bin/pasarguard" "$backup_dir/"
     [ -f "/usr/local/bin/manubis" ] && cp "/usr/local/bin/manubis" "$backup_dir/"
 
     # Backup shared libraries
@@ -45,7 +44,6 @@ restore_scripts() {
     [ -z "$backup_dir" ] && return 1
 
     # Restore main scripts
-    [ -f "$backup_dir/pasarguard" ] && install -m 755 "$backup_dir/pasarguard" "/usr/local/bin/pasarguard"
     [ -f "$backup_dir/manubis" ] && install -m 755 "$backup_dir/manubis" "/usr/local/bin/manubis"
 
     # Restore shared libraries
@@ -105,7 +103,9 @@ install_shared_libs_from_local() {
 
     mkdir -p "$SHARED_LIB_INSTALL_DIR"
     for lib_name in "$@"; do
-        if [ -f "$source_dir/lib/$lib_name" ]; then
+        if [ -f "$source_dir/scripts/lib/$lib_name" ]; then
+            install -m 644 "$source_dir/scripts/lib/$lib_name" "$SHARED_LIB_INSTALL_DIR/$lib_name"
+        elif [ -f "$source_dir/lib/$lib_name" ]; then
             install -m 644 "$source_dir/lib/$lib_name" "$SHARED_LIB_INSTALL_DIR/$lib_name"
         fi
     done
@@ -122,7 +122,7 @@ install_shared_libs_from_repo() {
     mkdir -p "$SHARED_LIB_INSTALL_DIR"
 
     for lib_name in "$@"; do
-        if ! github_download_file "$(github_raw_url "$fetch_repo" "lib/$lib_name")" "$tmp_dir/$lib_name"; then
+        if ! github_download_file "$(github_raw_url "$fetch_repo" "scripts/lib/$lib_name")" "$tmp_dir/$lib_name"; then
             rm -rf "$tmp_dir"
             return 1
         fi
